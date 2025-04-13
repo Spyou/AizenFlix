@@ -52,6 +52,11 @@ dependencies:
   bounce_tapper: ^1.1.4
   animate_do: ^4.2.0
   app_links: ^6.4.0
+  js_packer: ^0.0.5
+  flutter_eval: ^0.7.6
+  html: ^0.15.5+1
+  dio_cookie_manager: ^3.2.0
+  cookie_jar: ^4.0.8
 
 
 dev_dependencies:

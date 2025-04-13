@@ -18,11 +18,4 @@ class ThemeController extends GetxController {
     box.write('isDarkMode', isDarkMode.value);
     Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
   }
-  // RxBool isDark = false.obs;
-
-  // void changeTheme() async {
-  //   isDark.value = !isDark.value;
-
-  //   Get.changeThemeMode(isDark.value ? ThemeMode.dark : ThemeMode.light);
-  // }
 }

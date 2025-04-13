@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 const lightBGColor = Colors.white;
 const lightPrimaryColor = Color(0xFFFFD500);
 const lightAppBarColor = Colors.white;
+const lighttextColor = Colors.black;
 
 // Dark Mode
 
 const darkBGColor = Colors.black;
 const darkPrimaryColor = Color(0xFFFFD500);
 const darkAppBarColor = Colors.black;
+const darkTextColor = Colors.white;
 
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:flutter/material.dart';

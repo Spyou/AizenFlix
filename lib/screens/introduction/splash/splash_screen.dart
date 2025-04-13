@@ -1,8 +1,5 @@
-import 'package:anilist_test/controllers/home_controller.dart';
-import 'package:anilist_test/controllers/user_controller.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -11,8 +8,6 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context).colorScheme;
-    HomeController homeController = Get.put(HomeController());
-    UserController userController = Get.put(UserController());
     return Scaffold(
       body: Center(
         child: FadeInDown(

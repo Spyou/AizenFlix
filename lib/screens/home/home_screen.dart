@@ -1,5 +1,6 @@
 import 'package:anilist_test/controllers/user_controller.dart';
 import 'package:anilist_test/screens/search/search_screen.dart';
+import 'package:anilist_test/screens/setting/setting_screen.dart';
 import 'package:anilist_test/widgets/banner_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,7 @@ class HomeScreen extends StatelessWidget {
                             child: Icon(
                               Icons.person,
                               size: 30,
-                            ), // Default icon when user data is not loaded
+                            ), // Default icon when user data isxx not loaded
                           );
                         }
 
@@ -79,6 +80,7 @@ class HomeScreen extends StatelessWidget {
                           onTap: () {
                             // authController.logout();
                             // Get.to(() => MyListScreen());
+                            Get.to(() => SettingScreen());
                           },
                           child: CircleAvatar(
                             radius: 23,
@@ -155,21 +157,20 @@ class HomeScreen extends StatelessWidget {
           return GestureDetector(
             onTap: () async {
               await Get.to(
-                transition: Transition.fadeIn,
                 () => DetailScreen(animeId: animeList[index].id),
+                transition: Transition.fadeIn,
               );
               await userController.fetchUserAnimeList();
             },
             child: Column(
               children: [
-                // ✅ Anime Image
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   width: 120,
-                  height: 160, // Adjusted to fit text
+                  height: 160,
                   margin: EdgeInsets.all(5.0),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),

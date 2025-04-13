@@ -11,6 +11,7 @@ var lightTheme = ThemeData(
   colorScheme: const ColorScheme.light(
     surface: lightBGColor,
     primary: lightPrimaryColor,
+    onPrimary: lighttextColor,
   ),
 );
 
@@ -23,6 +24,7 @@ var darkTheme = ThemeData(
   colorScheme: const ColorScheme.dark(
     surface: darkBGColor,
     primary: darkPrimaryColor,
+    onPrimary: darkTextColor,
   ),
 );
 

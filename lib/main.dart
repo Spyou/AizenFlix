@@ -6,6 +6,7 @@ import 'package:anilist_test/screens/introduction/auth/login_screens.dart';
 import 'package:anilist_test/screens/introduction/auth/webview_screen.dart';
 import 'package:anilist_test/screens/introduction/splash/splash_screen.dart';
 import 'package:anilist_test/screens/main_screen.dart';
+import 'package:anilist_test/services/anime_api_service.dart';
 import 'package:anilist_test/services/graphql_service.dart';
 import 'package:anilist_test/utils/themes/theme.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +15,12 @@ import 'package:get_storage/get_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.put(DetailsController()); // ✅ Initialize once so it can be found later
+  Get.put(DetailsController());
   await GetStorage.init(); // Initialize GetStorage before app runs
   await GraphQLService.loadAuthToken(); // ✅ Load saved token before app starts
   Get.put(AuthController()); // ✅ Initialize AuthController
   Get.put(UserController(), permanent: true);
+  await Get.putAsync(() => AnimePaheService().init());
   runApp(MyApp());
 }
 
@@ -35,7 +37,10 @@ class MyApp extends StatelessWidget {
 
       debugShowCheckedModeBanner: false,
       title: 'AizenFlix',
-      theme: darkTheme,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode:
+          themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
       initialRoute: "/",
       getPages: [
         GetPage(name: "/", page: () => SplashScreen()),

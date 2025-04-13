@@ -1,5 +1,7 @@
 import 'package:anilist_test/controllers/user_controller.dart';
 import 'package:anilist_test/models/anime_model.dart';
+import 'package:anilist_test/models/episode_list_model.dart';
+import 'package:anilist_test/screens/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,9 +29,15 @@ class _DetailScreenState extends State<DetailScreen>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.fetchAnimeDetails(widget.animeId);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await controller.fetchAnimeDetails(widget.animeId).then((_) {
+        // Fetch additional data after the initial fetch
+        controller.fetchAnimePaheEpisodes(
+          controller.animeDetails.value?.title ?? "",
+        );
+      });
     });
+
     _scrollController = ScrollController();
     _scrollController.addListener(() {
       if (_scrollController.offset > 250 && !_isAppBarCollapsed) {
@@ -226,23 +234,23 @@ class _DetailScreenState extends State<DetailScreen>
           body: TabBarView(
             controller: _tabController,
             children: [
-              _buildEpisodesTab(anime),
-              _buildVerticalCastList(),
+              _buildEpisodesTab(),
+              buildVerticalCastList(),
               Obx(() {
                 if (controller.similarAnime.isEmpty) {
                   return Center(child: CircularProgressIndicator());
                 }
-                return _buildVerticalGridList(controller.similarAnime);
+                return buildVerticalGridList(controller.similarAnime);
               }),
 
               Obx(() {
                 if (controller.similarAnime.isEmpty) {
                   return Center(child: CircularProgressIndicator());
                 }
-                return _buildVerticalGridList(controller.relatedAnime);
+                return buildVerticalGridList(controller.relatedAnime);
               }),
 
-              _buildMoreDetailsTab(anime),
+              buildMoreDetailsTab(anime),
             ],
           ),
         );
@@ -251,7 +259,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   // ✅ Section Title
-  Widget _buildSectionTitle(String title) {
+  Widget buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 8),
       child: Text(
@@ -265,38 +273,113 @@ class _DetailScreenState extends State<DetailScreen>
     );
   }
 
-  // ✅ Episodes Tab
-  Widget _buildEpisodesTab(AnimeDetailModel anime) {
-    return anime.episodes == null
-        ? Center(
+  // ✅ Episode Tab Widget using your Episode Model
+  Widget _buildEpisodesTab() {
+    return Obx(() {
+      final List<Data> episodes = controller.animePaheEpisodes.cast<Data>();
+      if (episodes.isEmpty) {
+        return Center(
           child: Text(
-            "No episodes available",
+            "No episodes found",
             style: TextStyle(color: Colors.white70),
           ),
-        )
-        : ListView.builder(
-          padding: EdgeInsets.all(10),
-          itemCount: anime.episodes ?? 0,
-          itemBuilder: (context, index) {
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.red,
-                child: Text(
-                  "${index + 1}",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              title: Text(
-                "Episode ${index + 1}",
-                style: TextStyle(color: Colors.white70),
-              ),
-            );
-          },
         );
+      }
+
+      return ListView.builder(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        itemCount: episodes.length,
+        itemBuilder: (context, index) {
+          final episode = episodes[index];
+          print(episode.title ?? "Unknown");
+          return InkWell(
+            onTap: () {
+              print(controller.animeSessionId.value);
+              print(episode.session);
+              Get.to(
+                () => VideoPlayerScreen(
+                  animeSession: controller.animeSessionId.value,
+                  episodeSession: episode.session!,
+                ),
+              );
+            },
+
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 8),
+              // color: Colors.red,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 130,
+                        height: 80,
+                        margin: EdgeInsets.only(right: 10),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: CachedNetworkImage(
+                            imageUrl: episode.snapshot ?? "",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      // ✅ Episode Title
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Episode ${episode.episode}",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            // Format duration to remove leading zeros
+                            episode.duration != null
+                                ? "${episode.duration!.replaceFirst(RegExp(r'^00:'), '')} minutes"
+                                : "N/A",
+                            // "${episode.duration}"
+                            //         " min" ??
+                            //     "N/A",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 6),
+                  // ✅ Episode Description
+                  Text(
+                    episode.disc ?? "No description available",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white70,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    });
   }
 
   // ✅ Vertical Cast List
-  Widget _buildVerticalCastList() {
+  Widget buildVerticalCastList() {
     return Obx(() {
       if (controller.castList.isEmpty) {
         return Center(
@@ -387,26 +470,61 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   // ✅ More Details Tab
-  Widget _buildMoreDetailsTab(AnimeDetailModel anime) {
+  Widget buildMoreDetailsTab(AnimeDetailModel anime) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle("Description"),
+            buildSectionTitle("Description"),
             Text(
               anime.description?.replaceAll("<br>", "") ??
                   "No description available",
               style: TextStyle(fontSize: 14, color: Colors.white70),
             ),
+            SizedBox(height: 20),
+            // buildSectionTitle("Status"),
+            // Text(
+            //   anime.trailerUrl ?? "N/A",
+            //   style: TextStyle(fontSize: 14, color: Colors.white70),
+            // ),
+            // buildSectionTitle("Genres"),
+            // Container(
+            //   color: Colors.red,
+            //   height: 130,
+            //   width: double.infinity,
+            //   child: GridView.builder(
+            //     padding: EdgeInsets.all(10),
+            //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            //       crossAxisCount: 3,
+            //       crossAxisSpacing: 10,
+            //       mainAxisSpacing: 10,
+            //       childAspectRatio: 2.5,
+            //     ),
+            //     itemCount: anime.genres.length,
+            //     itemBuilder: (context, index) {
+            //       return Chip(
+            //         label: Text(
+            //           anime.genres[index],
+            //           style: TextStyle(color: Colors.white),
+            //         ),
+            //         backgroundColor: Colors.grey[800],
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(10),
+            //         ),
+            //         padding: EdgeInsets.symmetric(horizontal: 10),
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildVerticalGridList(List<AnimeModel> animeList) {
+  Widget buildVerticalGridList(List<AnimeModel> animeList) {
     if (animeList.isEmpty) {
       return Center(
         child: Image.network(
@@ -498,11 +616,11 @@ class _DetailScreenState extends State<DetailScreen>
       titleStyle: TextStyle(fontWeight: FontWeight.bold),
       content: Column(
         children: [
-          _statusButton("Watching", "CURRENT", animeId),
-          _statusButton("Completed", "COMPLETED", animeId),
-          _statusButton("Paused", "PAUSED", animeId),
-          _statusButton("Dropped", "DROPPED", animeId),
-          _statusButton("Planning", "PLANNING", animeId),
+          statusButton("Watching", "CURRENT", animeId),
+          statusButton("Completed", "COMPLETED", animeId),
+          statusButton("Paused", "PAUSED", animeId),
+          statusButton("Dropped", "DROPPED", animeId),
+          statusButton("Planning", "PLANNING", animeId),
         ],
       ),
 
@@ -514,7 +632,7 @@ class _DetailScreenState extends State<DetailScreen>
   }
 
   /// ✅ Helper function to create buttons inside dialog
-  Widget _statusButton(String label, String status, int animeId) {
+  Widget statusButton(String label, String status, int animeId) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: ElevatedButton(
