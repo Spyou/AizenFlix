@@ -134,17 +134,17 @@ class AnimePaheService extends GetxService {
         final episodesList =
             episodes.map((e) => AnimeEpisode.fromJson(e)).toList();
 
-        print('✅ Successfully loaded ${episodesList.length} episodes');
+        print('Successfully loaded ${episodesList.length} episodes');
         return episodesList;
       } else {
         // If we got HTML instead of JSON (likely DDoS protection page)
-        print('❌ Failed to load episodes. Status: ${response.statusCode}');
+        print('Failed to load episodes. Status: ${response.statusCode}');
 
         // Return mock data instead
         return _generateMockEpisodes(12);
       }
     } catch (e) {
-      print('❌ Error getting episodes: $e');
+      print('Error getting episodes: $e');
 
       // Return mock data on error
       return _generateMockEpisodes(12);

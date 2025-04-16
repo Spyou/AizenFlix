@@ -158,7 +158,7 @@ class _MyListScreenState extends State<MyListScreen> {
     );
   }
 
-  /// ✅ Anime List UI
+  /// Anime List UI
   Widget _buildAnimeList(RxList animeList) {
     return Obx(() {
       if (animeList.isEmpty) {

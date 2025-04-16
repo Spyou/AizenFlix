@@ -87,7 +87,7 @@ class _BannerSliderState extends State<BannerSlider> {
                         ),
                       ),
 
-                      // ✅ Anime Details
+                      // Anime Details
                       Positioned(
                         bottom: 40,
                         left: 15,
@@ -95,7 +95,7 @@ class _BannerSliderState extends State<BannerSlider> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            // ✅ Anime Cover Image
+                            // Anime Cover Image
                             Column(
                               children: [
                                 ClipRRect(
@@ -108,7 +108,7 @@ class _BannerSliderState extends State<BannerSlider> {
                                   ),
                                 ),
                                 SizedBox(height: 10),
-                                // ✅ Episodes Count
+                                // Episodes Count
                                 Text(
                                   "Episodes: ${anime.episodes ?? "N/A"}",
                                   style: TextStyle(
@@ -121,12 +121,12 @@ class _BannerSliderState extends State<BannerSlider> {
                             ),
                             SizedBox(width: 15),
 
-                            // ✅ Anime Info
+                            // Anime Info
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // ✅ Title
+                                  // Title
                                   Text(
                                     anime.title,
                                     style: TextStyle(
@@ -140,7 +140,7 @@ class _BannerSliderState extends State<BannerSlider> {
 
                                   SizedBox(height: 2),
 
-                                  // ✅ Description (Short)
+                                  // Description (Short)
                                   Text(
                                     anime.description
                                         .replaceAll("<br>", "")
@@ -156,7 +156,7 @@ class _BannerSliderState extends State<BannerSlider> {
                                   ),
 
                                   SizedBox(height: 3),
-                                  // ✅ Status (Releasing/Finished)
+                                  // Status (Releasing/Finished)
                                   Text(
                                     anime.status,
                                     style: TextStyle(
@@ -168,7 +168,7 @@ class _BannerSliderState extends State<BannerSlider> {
 
                                   SizedBox(height: 10),
 
-                                  // ✅ Genres
+                                  // Genres
                                   Text(
                                     (anime.genres.isNotEmpty)
                                         ? anime.genres.take(3).join(" • ")
@@ -195,7 +195,7 @@ class _BannerSliderState extends State<BannerSlider> {
               }).toList(),
         ),
 
-        // 🔵 Page Indicator (Bottom Dots)
+        // Page Indicator (Bottom Dots)
         SizedBox(height: 10),
         AnimatedSmoothIndicator(
           activeIndex: _currentIndex,

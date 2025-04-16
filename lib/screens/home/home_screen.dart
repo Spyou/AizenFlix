@@ -107,26 +107,26 @@ class HomeScreen extends StatelessWidget {
         body: Obx(
           () => ListView(
             children: [
-              // 🔥 Banner Slider
+              // Banner Slider
               BannerSlider(animeList: homeController.trendingAnime),
 
-              // 🔥 Recently Updated Anime
+              // Recently Updated Anime
               _buildSectionTitle("Recently Updated"),
               _buildHorizontalList(homeController.recentlyUpdatedAnime),
 
-              // 🔥 Trending Anime
+              // Trending Anime
               _buildSectionTitle("Trending Now"),
               _buildHorizontalList(homeController.trendingAnime),
 
-              // ✅ Top Rated Anime Section
+              // Top Rated Anime Section
               _buildSectionTitle('Top Rated'),
               Obx(() => _buildHorizontalList(homeController.topRatedAnime)),
 
-              // 🎬 Trending Movies
+              // Trending Movies
               _buildSectionTitle("Trending Movies"),
               Obx(
                 () => _buildHorizontalList(homeController.trendingMovies),
-              ), // ✅ Display Trending Movies
+              ), // Display Trending Movies
             ],
           ),
         ),
@@ -182,7 +182,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                // ✅ Title at the Bottom
+                // Title at the Bottom
                 SizedBox(
                   width: 110,
                   child: Text(

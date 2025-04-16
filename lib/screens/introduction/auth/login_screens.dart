@@ -134,13 +134,3 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-  // Center(
-  //           child: ElevatedButton(
-  //             onPressed: authController.login,
-  //             child: Text("Login with AniList"),
-  //           ),
-  //         ),
