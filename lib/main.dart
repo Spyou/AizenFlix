@@ -16,9 +16,9 @@ import 'package:get_storage/get_storage.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(DetailsController());
-  await GetStorage.init(); // Initialize GetStorage before app runs
-  await GraphQLService.loadAuthToken(); // ✅ Load saved token before app starts
-  Get.put(AuthController()); // ✅ Initialize AuthController
+  await GetStorage.init();
+  await GraphQLService.loadAuthToken();
+  Get.put(AuthController());
   Get.put(UserController(), permanent: true);
   await Get.putAsync(() => AnimePaheService().init());
   runApp(MyApp());
@@ -45,14 +45,13 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(name: "/", page: () => SplashScreen()),
         GetPage(name: "/LoginScreen", page: () => LoginScreen()),
-        // GetPage(name: "/BottomNavar", page: () => BottomNavbar()),
         GetPage(name: "/HomeScreen", page: () => MainScreen()),
         GetPage(
           name: "/WebViewScreen",
           page:
               () => WebViewScreen(
                 loginUrl: "https://anilist.co/api/v2/oauth/authorize",
-              ), // ✅ Pass default URL
+              ),
         ),
       ],
     );

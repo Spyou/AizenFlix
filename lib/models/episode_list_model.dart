@@ -4,7 +4,7 @@ class EpisodeListModel {
   int? currentPage;
   int? lastPage;
   String? nextPageUrl;
-  Null prevPageUrl;
+  dynamic prevPageUrl;
   int? from;
   int? to;
   List<Data>? data;
@@ -30,11 +30,16 @@ class EpisodeListModel {
     prevPageUrl = json['prev_page_url'];
     from = json['from'];
     to = json['to'];
-    if (json['data'] != null) {
+
+    // ✅ Safe patch to prevent crash on unexpected response
+    if (json['data'] is List) {
       data = <Data>[];
       json['data'].forEach((v) {
         data!.add(Data.fromJson(v));
       });
+    } else {
+      print("❌ Unexpected data format: ${json['data']}");
+      data = [];
     }
   }
 

@@ -145,6 +145,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildHorizontalList(List<AnimeModel> animeList) {
+    var theme = Theme.of(Get.context!).colorScheme;
     if (animeList.isEmpty) return Center(child: CircularProgressIndicator());
 
     return SizedBox(
@@ -188,7 +189,7 @@ class HomeScreen extends StatelessWidget {
                     animeList[index].title,
                     textAlign: TextAlign.start,
                     style: TextStyle(
-                      color: Colors.white, // Adjust based on theme
+                      color: theme.onPrimary,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),

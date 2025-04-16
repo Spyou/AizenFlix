@@ -38,7 +38,6 @@ dependencies:
   dio: ^5.8.0+1
   graphql_flutter: ^5.1.2
   cached_network_image: ^3.4.1
-  chewie: ^1.10.0
   url_launcher: ^6.3.1
   carousel_slider: ^5.0.0
   shared_preferences: ^2.5.2
@@ -55,8 +54,10 @@ dependencies:
   js_packer: ^0.0.5
   flutter_eval: ^0.7.6
   html: ^0.15.5+1
-  dio_cookie_manager: ^3.2.0
-  cookie_jar: ^4.0.8
+  video_player: ^2.9.5
+  better_player_plus: ^1.0.8
+  share_plus: ^10.1.4
+  flutter_launcher_icons: ^0.14.3
 
 
 dev_dependencies:
@@ -84,7 +85,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-  #   - images/a_dot_ham.jpeg
+    - assets/icon/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

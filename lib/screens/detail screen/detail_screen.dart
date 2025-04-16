@@ -5,6 +5,7 @@ import 'package:anilist_test/screens/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../controllers/details_controller.dart';
 import '../../models/anime_detail_model.dart';
@@ -66,6 +67,29 @@ class _DetailScreenState extends State<DetailScreen>
   Widget build(BuildContext context) {
     var theme = Theme.of(context).colorScheme;
     return Scaffold(
+      floatingActionButton: Obx(
+        () => FloatingActionButton(
+          backgroundColor: theme.primary,
+          child: Icon(
+            color: theme.onSecondary,
+            controller.sortOrder.value == 'episode_asc'
+                ? Icons.arrow_upward
+                : Icons.arrow_downward,
+          ),
+          onPressed: () {
+            // Toggle between asc and desc
+            if (controller.sortOrder.value == 'episode_asc') {
+              controller.sortOrder.value = 'episode_desc';
+            } else {
+              controller.sortOrder.value = 'episode_asc';
+            }
+
+            // Reload episodes with new order
+            controller.fetchAnimePaheEpisodes(controller.lastTitle ?? '');
+          },
+        ),
+      ),
+
       backgroundColor: Colors.black,
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -95,7 +119,12 @@ class _DetailScreenState extends State<DetailScreen>
                     IconButton(
                       icon: Icon(Icons.share),
                       onPressed: () {
-                        // Share anime details
+                        Share.shareUri(
+                          Uri.parse(
+                            anime.trailerUrl ??
+                                "https://anilist.co/anime/${anime.id}",
+                          ),
+                        );
                       },
                     ),
                     IconButton(
@@ -277,8 +306,9 @@ class _DetailScreenState extends State<DetailScreen>
   Widget _buildEpisodesTab() {
     return Obx(() {
       final List<Data> episodes = controller.animePaheEpisodes.cast<Data>();
+
       if (episodes.isEmpty) {
-        return Center(
+        return const Center(
           child: Text(
             "No episodes found",
             style: TextStyle(color: Colors.white70),
@@ -286,94 +316,108 @@ class _DetailScreenState extends State<DetailScreen>
         );
       }
 
-      return ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        itemCount: episodes.length,
-        itemBuilder: (context, index) {
-          final episode = episodes[index];
-          print(episode.title ?? "Unknown");
-          return InkWell(
-            onTap: () {
-              print(controller.animeSessionId.value);
-              print(episode.session);
-              Get.to(
-                () => VideoPlayerScreen(
-                  animeSession: controller.animeSessionId.value,
-                  episodeSession: episode.session!,
-                ),
+      return NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          if (!controller.isFetchingMore.value &&
+              controller.hasMoreEpisodes.value &&
+              scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+            controller.fetchAnimePaheEpisodes(
+              controller.lastTitle!,
+              loadMore: true,
+            );
+          }
+          return true;
+        },
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          itemCount: episodes.length + 1,
+          itemBuilder: (context, index) {
+            if (index == episodes.length) {
+              return Obx(
+                () =>
+                    controller.isFetchingMore.value
+                        ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                        : const SizedBox.shrink(),
               );
-            },
+            }
 
-            child: Container(
-              margin: EdgeInsets.symmetric(vertical: 8),
-              // color: Colors.red,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 130,
-                        height: 80,
-                        margin: EdgeInsets.only(right: 10),
-                        child: ClipRRect(
+            final episode = episodes[index];
+            return InkWell(
+              onTap: () {
+                Get.to(
+                  () => VideoPlayerScreen(
+                    animeSession: controller.animeSessionId.value,
+                    episodeSession: episode.session!,
+                  ),
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: CachedNetworkImage(
                             imageUrl: episode.snapshot ?? "",
+                            width: 130,
+                            height: 80,
                             fit: BoxFit.cover,
                           ),
                         ),
-                      ),
-                      // ✅ Episode Title
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Episode ${episode.episode}",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Episode ${episode.episode}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            // Format duration to remove leading zeros
-                            episode.duration != null
-                                ? "${episode.duration!.replaceFirst(RegExp(r'^00:'), '')} minutes"
-                                : "N/A",
-                            // "${episode.duration}"
-                            //         " min" ??
-                            //     "N/A",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white70,
+                            const SizedBox(height: 5),
+                            Text(
+                              episode.duration?.replaceFirst(
+                                    RegExp(r'^00:'),
+                                    '',
+                                  ) ??
+                                  "N/A",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white70,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 6),
-                  // ✅ Episode Description
-                  Text(
-                    episode.disc ?? "No description available",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white70,
-                      fontStyle: FontStyle.italic,
+                          ],
+                        ),
+                      ],
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                    const SizedBox(height: 6),
+                    Text(
+                      episode.disc ?? "No description available",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       );
     });
   }
@@ -613,7 +657,7 @@ class _DetailScreenState extends State<DetailScreen>
 
     Get.defaultDialog(
       title: "Add Anime to List",
-      titleStyle: TextStyle(fontWeight: FontWeight.bold),
+      titleStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
       content: Column(
         children: [
           statusButton("Watching", "CURRENT", animeId),

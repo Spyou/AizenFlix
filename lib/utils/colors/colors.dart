@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 // Light Mode
 const lightBGColor = Colors.white;
-const lightPrimaryColor = Color(0xFFFFD500);
+const lightPrimaryColor = Color(0xFFD90166);
 const lightAppBarColor = Colors.white;
 const lighttextColor = Colors.black;
+const lightBoxColor = Color(0xFFF5F5F5);
+const lightExternalTextColor = Colors.black54;
 
 // Dark Mode
 
@@ -12,6 +14,8 @@ const darkBGColor = Colors.black;
 const darkPrimaryColor = Color(0xFFFFD500);
 const darkAppBarColor = Colors.black;
 const darkTextColor = Colors.white;
+const darkBoxColor = Color.fromARGB(255, 34, 34, 34);
+const darkExternalTextColor = Colors.white70;
 
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:flutter/material.dart';

@@ -1,21 +1,40 @@
-// video_controller.dart
 import 'package:anilist_test/controllers/js_unpacker.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:video_player/video_player.dart';
 
 class VideoController extends GetxController {
-  final dio = Dio();
+  final String animeSession;
+  final String episodeSession;
+
+  VideoController({required this.animeSession, required this.episodeSession});
+
+  final Dio dio = Dio();
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
   final RxString videoUrl = ''.obs;
-  Rx<VideoPlayerController?> playerController = Rx<VideoPlayerController?>(
-    null,
-  );
 
-  Future<void> extractVideoUrl(
+  @override
+  void onInit() {
+    super.onInit();
+    loadVideoUrl();
+  }
+
+  void loadVideoUrl() async {
+    isLoading.value = true;
+    try {
+      // extractVideoUrl funksiyasini chaqirib, media m3u8 linkini olamiz
+      String mediaLink = await extractVideoUrl(animeSession, episodeSession);
+      videoUrl.value = mediaLink;
+    } catch (e) {
+      errorMessage.value = "Xato: ${e.toString()}";
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<String> extractVideoUrl(
     String animeSession,
     String episodeSession,
   ) async {
@@ -53,10 +72,11 @@ class VideoController extends GetxController {
         }
       }
     }
-    getMediaLink(provider, url);
+    String mediaLink = await getMediaLink(provider, url);
+    return mediaLink;
   }
 
-  Future<void> getMediaLink(String provider, String url) async {
+  Future<String> getMediaLink(String provider, String url) async {
     print(url);
     final response = await dio.get(
       url,
@@ -88,28 +108,25 @@ class VideoController extends GetxController {
       }
     }
 
-    // Optionally, you can handle the result if needed
     if (evalContent != null) {
       JsUnpacker jsPacker = JsUnpacker(evalContent);
-      print("Unpacked content: ${extractFileUrl(jsPacker.unpack()!)}");
-      print("Unpacked content: ${jsPacker.detect()}");
-      print("Eval function content extracted.");
+      var unpacked = jsPacker.unpack();
+      print("Unpacked content: ${extractFileUrl(unpacked!)}");
+      return extractFileUrl(unpacked)!;
     } else {
-      print("No eval function found.");
+      return "No eval function found.";
     }
   }
 
   String? extractFileUrl(String input) {
-    final regex = RegExp(r"https?://\S+\.m3u8");
+    final regex = RegExp(r"https?://[^\s\']+\.m3u8(?:\?[^\s\']*)?");
+
     final match = regex.firstMatch(input);
     return match?.group(0);
   }
 
   String? getPacked(String input) {
-    // Create a RegExp with the equivalent pattern
     RegExp packedRegex = RegExp(r"eval\(function\(p,a,c,k,e,.*\)\)");
-
-    // Search for the first match of the regex in the input string
     return packedRegex.firstMatch(input)?.group(0);
   }
 }

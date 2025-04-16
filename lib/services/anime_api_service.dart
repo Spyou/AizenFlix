@@ -57,12 +57,9 @@ class AnimePaheService extends GetxService {
   final RxInt from = 1.obs;
   final RxInt to = 0.obs;
 
-  // Fixed session ID - the one you provided
   final String sessionId = '4f34bcac-c734-a182-8757-1e49ff1902ca';
 
-  // Initialize the service with browser-like headers
   Future<AnimePaheService> init() async {
-    // Configure dio with browser-like headers
     _dio.options.headers = _generateBrowserHeaders();
 
     // For debugging

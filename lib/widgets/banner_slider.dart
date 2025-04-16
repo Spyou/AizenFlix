@@ -62,7 +62,7 @@ class _BannerSliderState extends State<BannerSlider> {
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             colorFilter: ColorFilter.mode(
-                              Colors.black.withOpacity(0.5),
+                              theme.surface.withOpacity(0.5),
                               BlendMode.darken,
                             ),
                             image: CachedNetworkImageProvider(
@@ -79,7 +79,7 @@ class _BannerSliderState extends State<BannerSlider> {
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Colors.black, Colors.transparent],
+                              colors: [theme.surface, Colors.transparent],
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
                             ),
@@ -112,7 +112,7 @@ class _BannerSliderState extends State<BannerSlider> {
                                 Text(
                                   "Episodes: ${anime.episodes ?? "N/A"}",
                                   style: TextStyle(
-                                    color: Colors.white70,
+                                    color: theme.secondary,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -174,7 +174,7 @@ class _BannerSliderState extends State<BannerSlider> {
                                         ? anime.genres.take(3).join(" • ")
                                         : "No Genres Available",
                                     style: TextStyle(
-                                      color: Colors.white54,
+                                      color: theme.secondary,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -203,8 +203,8 @@ class _BannerSliderState extends State<BannerSlider> {
           effect: ExpandingDotsEffect(
             dotHeight: 6,
             dotWidth: 6,
-            activeDotColor: const Color(0xFFFFD500),
-            dotColor: Colors.white.withOpacity(0.4),
+            activeDotColor: theme.primary,
+            dotColor: theme.onPrimary.withOpacity(0.5),
           ),
           onDotClicked: (index) {
             carouselController.animateToPage(index);

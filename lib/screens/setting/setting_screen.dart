@@ -74,7 +74,7 @@ class _ProfileSettings2ViewState extends State<SettingScreen> {
                     right: 20,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 34, 34, 34),
+                    color: theme.primaryContainer,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
@@ -84,19 +84,13 @@ class _ProfileSettings2ViewState extends State<SettingScreen> {
                       Container(
                         height: 90,
                         width: 90,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          // border: Border.all(color: theme.primary, width: 0.5),
-                        ),
+                        decoration: BoxDecoration(shape: BoxShape.circle),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(100),
                           child: CachedNetworkImage(
                             fit: BoxFit.cover,
                             imageUrl:
                                 userController.userData['avatar']['large'],
-                            // placeholder:
-                            //     (context, url) =>
-                            //         const Center(child: CircularProgressIndicator()),
                             errorWidget:
                                 (context, url, error) =>
                                     const Icon(Icons.error),
@@ -133,7 +127,7 @@ class _ProfileSettings2ViewState extends State<SettingScreen> {
                         height: 40,
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            // authController.logout();
+                            authController.logout();
                           },
                           icon: const Icon(Icons.logout_rounded),
 
@@ -185,7 +179,7 @@ class _ProfileSettings2ViewState extends State<SettingScreen> {
                 right: 20,
               ),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 34, 34, 34),
+                color: theme.primaryContainer,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(

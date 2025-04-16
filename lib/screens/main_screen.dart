@@ -27,12 +27,12 @@ class MainScreen extends StatelessWidget {
           child: NavigationBar(
             labelTextStyle: WidgetStateProperty.all(
               TextStyle(
-                color: Colors.white,
+                color: theme.onPrimary,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            backgroundColor: Colors.black,
+            backgroundColor: theme.surface,
             selectedIndex: controller.currentIndex.value,
             onDestinationSelected: (index) {
               controller.changePage(index);
