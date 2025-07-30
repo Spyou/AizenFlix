@@ -7,22 +7,27 @@ import '../services/api_service.dart';
 class HomeController extends GetxController {
   var trendingAnime = <AnimeModel>[].obs;
   var recentlyUpdatedAnime = <AnimeModel>[].obs;
-  var topRatedAnime = <AnimeModel>[].obs; // ✅ New: Top Rated Anime
-  var trendingMovies = <AnimeModel>[].obs; // ✅ New: Trending Movies
+  var topRatedAnime = <AnimeModel>[].obs;
+  var trendingMovies = <AnimeModel>[].obs;
   var userAnimeList = <AnimeModel>[].obs;
   var popularAnime = <AnimeModel>[].obs;
-  var isLoadingPopular = false.obs; // ✅ Loading state
+  var mostFavourite = <AnimeModel>[].obs;
+
+  var isLoadingPopular = false.obs; //Loading state
   var currentPage = 1.obs;
-  var hasMoreAnime = true.obs; // ✅ Prevent infinite calls when no more data
+
+  var hasMoreAnime = true.obs; //Prevent infinite calls when no more data
 
   @override
   void onInit() {
     super.onInit();
     fetchTrendingAnime();
-    fetchTrendingMovies(); // ✅ Fetch Trending Movies
+    fetchTrendingMovies(); // Fetch Trending Movies
     fetchRecentlyUpdatedAnime();
-    fetchTopRatedAnime(); // ✅ Fetch Top Rated Anime
+    fetchTopRatedAnime(); // Fetch Top Rated Anime
+    fetchContinueWatching(userId: 1); // Fetch Continue Watching List
     fetchPopularAnime(); // Load first page on start
+    fetchMostFavouriteAnime();
   }
 
   Future<void> fetchTrendingAnime({int page = 1}) async {
@@ -227,5 +232,114 @@ class HomeController extends GetxController {
     }
 
     isLoadingPopular.value = false;
+  }
+
+  // User Continue Watching List
+
+  Future<List<AnimeModel>> fetchContinueWatching({required int userId}) async {
+    const String query = """
+    query (\$userId: Int!) {
+      MediaListCollection(userId: \$userId, type: ANIME, status: CURRENT) {
+        lists {
+          name
+          entries {
+            id
+            progress
+            media {
+              id
+              title {
+                romaji
+                english
+              }
+              coverImage {
+                large
+              }
+              bannerImage
+              description
+              episodes
+              genres
+              status
+              averageScore
+            }
+          }
+        }
+      }
+    }
+  """;
+
+    final response = await ApiService.fetchAnime(query, {"userId": userId});
+
+    if (response != null) {
+      debugPrint("✅ API Raw Response: $response");
+
+      if (response['data'] != null &&
+          response['data']['MediaListCollection'] != null) {
+        var lists = response['data']['MediaListCollection']['lists'] as List;
+        List<AnimeModel> continueWatchingList = [];
+
+        for (var list in lists) {
+          var entries = list['entries'] as List;
+          for (var entry in entries) {
+            var anime = AnimeModel.fromJson(entry['media']);
+            anime.progress = entry['progress'];
+            continueWatchingList.add(anime);
+          }
+        }
+
+        // Update your UI with continueWatchingList
+        // For example:
+        // continueWatching.assignAll(continueWatchingList);
+        // continueWatching.refresh();
+
+        debugPrint(
+          "🎬 Loaded ${continueWatchingList.length} Continue Watching entries",
+        );
+
+        return continueWatchingList;
+      } else {
+        debugPrint("❌ No entries found in API response.");
+      }
+    } else {
+      debugPrint("❌ API Response is null.");
+    }
+
+    // Return empty list as fallback
+    return [];
+  }
+
+  // Fetch Most Favourite Anime
+  Future<void> fetchMostFavouriteAnime({int page = 1}) async {
+    const String query = """
+      query (\$page: Int) {
+        Page(page: \$page, perPage: 40) {
+          media(type: ANIME, sort: FAVOURITES_DESC, isAdult: false) {
+            id
+            title {
+              romaji
+              english
+            }
+            coverImage {
+              large
+            }
+            bannerImage
+            description
+            episodes
+            genres
+            status
+            averageScore
+            favourites
+          }
+        }
+      }
+    """;
+
+    final response = await ApiService.fetchAnime(query, {"page": page});
+    if (response != null && response['data'] != null) {
+      var animeList =
+          response['data']['Page']['media']
+              .map<AnimeModel>((item) => AnimeModel.fromJson(item))
+              .toList();
+      mostFavourite.assignAll(animeList);
+    }
   }
 }

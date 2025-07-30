@@ -114,6 +114,29 @@ class HomeScreen extends StatelessWidget {
               _buildSectionTitle("Recently Updated"),
               _buildHorizontalList(homeController.recentlyUpdatedAnime),
 
+              // Continue Watching
+              // _buildSectionTitle("Continue Watching"),
+              // FutureBuilder<List<AnimeModel>>(
+              //   future: homeController.fetchContinueWatching(
+              //     userId: userController.userId.value,
+              //   ),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.connectionState == ConnectionState.waiting) {
+              //       return Center(
+              //         child: CircularProgressIndicator(),
+              //       ); // Loading indicator
+              //     } else if (snapshot.hasError) {
+              //       return Text('Error: ${snapshot.error}'); // Error message
+              //     } else if (snapshot.hasData) {
+              //       return _buildHorizontalList(
+              //         snapshot.data!,
+              //       ); // Your widget to display data
+              //     } else {
+              //       return Text('No data available'); // Fallback for no data
+              //     }
+              //   },
+              // ),
+
               // Trending Anime
               _buildSectionTitle("Trending Now"),
               _buildHorizontalList(homeController.trendingAnime),
@@ -127,6 +150,11 @@ class HomeScreen extends StatelessWidget {
               Obx(
                 () => _buildHorizontalList(homeController.trendingMovies),
               ), // Display Trending Movies
+              // Most Favourite Anime
+              _buildSectionTitle("Most Favourite"),
+              Obx(
+                () => _buildHorizontalList(homeController.mostFavourite),
+              ), // Display Most Favourite Anime
             ],
           ),
         ),

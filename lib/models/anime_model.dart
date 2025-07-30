@@ -17,6 +17,7 @@ class AnimeModel {
   final bool isAdult;
   final int year;
   final String format;
+  int? progress;
 
   AnimeModel({
     required this.id,
@@ -35,10 +36,10 @@ class AnimeModel {
     required this.isAdult,
     required this.year,
     required this.format,
+    this.progress,
   });
 
   factory AnimeModel.fromJson(Map<String, dynamic> json) {
-    // ✅ PRINT JSON BEFORE PARSING
     print("🔹 Parsing Anime: $json");
 
     return AnimeModel(
@@ -59,19 +60,20 @@ class AnimeModel {
           (json['averageScore'] != null) ? json['averageScore'] / 10.0 : 0.0,
       genres:
           (json['genres'] as List?)?.map((g) => g.toString()).toList() ??
-          [], // ✅ Handle null genres
+          [], // Handle null genres
       status: json['status'] ?? 'Unknown',
       episodes:
           json['episodes'] != null
               ? json['episodes'] as int
-              : 0, // ✅ Fix crash if null
+              : 0, // Fix crash if null
       updatedAt:
           json['updatedAt'] != null
               ? json['updatedAt'] as int
-              : 0, // ✅ Fix crash if null
+              : 0, // Fix crash if null
       isAdult: json['isAdult'] ?? false,
       year: json['seasonYear'] ?? 0,
       format: json['format'] ?? 'Unknown',
+      progress: json['progress'], // Map progress from JSON
       studio:
           (json['studios']?['nodes'] != null &&
                   json['studios']['nodes'].isNotEmpty)

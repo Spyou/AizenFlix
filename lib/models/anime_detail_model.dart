@@ -35,7 +35,7 @@ class AnimeDetailModel {
   });
 
   factory AnimeDetailModel.fromJson(Map<String, dynamic> json) {
-    // ✅ Extract Similar Anime
+    // Extract Similar Anime
     List<AnimeModel> similarAnime = [];
     if (json['recommendations']?['edges'] != null) {
       similarAnime =
@@ -47,7 +47,7 @@ class AnimeDetailModel {
               .toList();
     }
 
-    // ✅ Extract Related Anime
+    // Extract Related Anime
     List<AnimeModel> relatedAnime = [];
     if (json['relations']?['edges'] != null) {
       relatedAnime =
@@ -56,7 +56,7 @@ class AnimeDetailModel {
               .toList();
     }
 
-    // ✅ Extract Cast (Voice Actors)
+    // Extract Cast (Voice Actors)
     List<CastModel> castList = [];
     if (json['characters']?['edges'] != null) {
       castList =
